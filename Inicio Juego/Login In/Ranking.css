@@ -1,0 +1,63 @@
+body {
+    background-image: url(fondo1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+    font-style: unset;
+}
+.ranking {
+    width: 500px;
+    height: 600px;
+    width: 50%;
+    margin: auto;
+}
+h1{
+    color: white;
+    text-align: center;
+    font-size: 60px;
+}
+table {
+    background-image: url(logo.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 3px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 20px;
+    color: white;
+}
+th {
+    background: linear-gradient(to bottom, red, white, blue);
+    color: black;
+    height: 50px;
+}
+#Ini{
+    position: absolute;
+    top: 638px;
+    left: 1200px;
+    background-color: red;
+    color: white;
+    padding: 6px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 60px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+footer{
+    text-align: center;
+    font-size: 15px;
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid lightcoral;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}

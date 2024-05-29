@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RIVER</title>
+    <style>
+        body {
+            background-color: black;
+        }
+        canvas {
+            border: 10px solid red;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body onload="iniciarJuego()">
+    <audio id="soundGameOver" src="sonido1.wav"></audio>
+    <audio id="soundBonus" src="sonido.mp3"></audio>
+    <script>
+        let jugador;
+        let puntaje;
+        let score = 0;
+        let timeElapsed = 0;
+        let scoreInterval = setInterval(increaseScore, 200);
+        let fondo = [];
+        let velocidadFondo = 1;
+        let obstaculos = [];
+        let obstaculoVelocidad = 3.5;
+        let bonusItems = [];
+        
+        let limiteIzquierdo = 280;  // Límite izquierdo del área de movimiento
+        let limiteDerecho = 1130; // Límite derecho del área de movimiento (canvas width - jugador width)
+
+        function iniciarJuego() {
+            areaJuego.inicio();
+            cargarFondos();
+            puntaje = new componente("30px", "Consolas", "red", 700, 50, "texto");
+            jugador = new componente(120, 120, "avion.png", 500, 600, "imagen"); // Posicionar al jugador en la parte inferior del canvas
+        }
+
+        let areaJuego = {
+            canvas: document.createElement("canvas"),
+            inicio: function() {
+                this.canvas.width = 1400;
+                this.canvas.height = 700;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.numFrame = 0;
+                this.interval = setInterval(actualizarArea, 15);
+                window.addEventListener('keydown', function(e) {
+                    areaJuego.keys = (areaJuego.keys || []);
+                    areaJuego.keys[e.keyCode] = (e.type === 'keydown');
+                });
+                window.addEventListener('keyup', function(e) {
+                    areaJuego.keys[e.keyCode] = false;
+                });
+            },
+            limpiar: function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop: function() {
+                clearInterval(this.interval);
+            }
+        }
+
+        function componente(ancho, alto, color, x, y, tipo) {
+            this.tipo = tipo;
+            if (tipo === "imagen" || tipo === "fondo" || tipo === "obstaculo" || tipo === "bonus") {
+                this.image = new Image();
+                this.image.onload = () => {
+                    this.loaded = true;
+                };
+                this.image.src = color;
+            }
+            this.width = ancho;
+            this.height = alto;
+            this.x = x;
+            this.y = y;
+            this.velX = 0;
+            this.velY = 0;
+            this.gravedad = 0.05;
+            this.velGravedad = 0;
+
+            this.nuevaPos = function() {
+                let nuevaX = this.x + this.velX;
+                let nuevaY = this.y + this.velY;
+
+                // Verificar límites del área permitida horizontalmente
+                if (nuevaX < limiteIzquierdo) {
+                    nuevaX = limiteIzquierdo;
+                }
+                if (nuevaX + this.width > limiteDerecho) {
+                    nuevaX = limiteDerecho - this.width;
+                }
+
+                this.x = nuevaX;
+                this.y = nuevaY;
+            }
+
+            this.actualizar = function() {
+                ctx = areaJuego.context;
+                if (this.tipo === "texto") {
+                    ctx.font = this.width + " " + this.height;
+                    ctx.fillStyle = color;
+                    ctx.fillText(this.text, this.x, this.y);
+                } else if (this.tipo === "imagen" || this.tipo === "fondo" || this.tipo === "obstaculo" || this.tipo === "bonus") {
+                    if (this.loaded) {
+                        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                    }
+                }
+            }
+
+            this.chocaste = function(otroobj) {
+                let miIzquierda = this.x;
+                let miDerecha = this.x + this.width;
+                let miSuperior = this.y;
+                let miInferior = this.y + this.height;
+                let otroIzquierda = otroobj.x;
+                let otroDerecha = otroobj.x + otroobj.width;
+                let otroSuperior = otroobj.y;
+                let otroInferior = otroobj.y + otroobj.height;
+                let chocar = true;
+                if ((miInferior < otroSuperior) ||
+                    (miSuperior > otroInferior) ||
+                    (miDerecha < otroIzquierda) ||
+                    (miIzquierda > otroDerecha)) {
+                    chocar = false;
+                }
+                return chocar;
+            }
+        }
+
+        function cargarFondos() {
+            let imagenesDeFondo = ["fondo2.png", "fondo.png", "fondo3.png", "fondo4.png", "fondo5.png"];
+            for (let i = 0; i < imagenesDeFondo.length; i++) {
+                let nuevaImagen = new componente(1400, 700, imagenesDeFondo[i], 0, -i * 700, "fondo");
+                fondo.push(nuevaImagen);
+            }
+        }
+
+        function increaseScore() {
+            score++;
+            puntaje.text = "Score: " + score;
+        }
+
+        function reproducirSonidoGameOver() {
+            let soundGameOver = document.getElementById("soundGameOver");
+            soundGameOver.currentTime = 0;
+            soundGameOver.play();
+        }
+
+        function reproducirSonidoBonus() {
+            let soundBonus = document.getElementById("soundBonus");
+            soundBonus.currentTime = 0;
+            soundBonus.play();
+        }
+
+        function actualizarArea() {
+            let velJugador = 5;
+            areaJuego.limpiar();
+            areaJuego.numFrame += 1;
+            jugador.velX = 0;
+            jugador.velY = 0;
+
+            if (areaJuego.keys && areaJuego.keys[37]) {
+                jugador.velX = -1 * velJugador;
+            }
+            if (areaJuego.keys && areaJuego.keys[39]) {
+                jugador.velX = 1 * velJugador;
+            }
+            if (areaJuego.keys && areaJuego.keys[38]) {
+                jugador.velY = -1 * velJugador;
+            }
+            if (areaJuego.keys && areaJuego.keys[40]) {
+                jugador.velY = 1 * velJugador;
+            }
+
+            for (let i = 0; i < fondo.length; i++) {
+                fondo[i].y += velocidadFondo;
+                if (fondo[i].y >= areaJuego.canvas.height) {
+                    fondo[i].y = -areaJuego.canvas.height;
+                }
+                fondo[i].actualizar();
+            }
+
+            crearObstaculos();
+            crearBonus();
+
+            for (let i = 0; i < obstaculos.length; i++) {
+                obstaculos[i].y += obstaculoVelocidad;
+                if (obstaculos[i].y > areaJuego.canvas.height) {
+                    obstaculos.splice(i, 1);
+                    i--;
+                } else if (jugador.chocaste(obstaculos[i])) {
+                    reproducirSonidoGameOver();
+                    areaJuego.stop();
+                    localStorage.setItem('score', score); // Save score on game over
+                    window.location.href = 'Juego.html'; // Redirect to leaderboard
+                    return;
+                }
+                obstaculos[i].actualizar();
+            }
+
+            for (let i = 0; i < bonusItems.length; i++) {
+                bonusItems[i].y += obstaculoVelocidad;
+                if (bonusItems[i].y > areaJuego.canvas.height) {
+                    bonusItems.splice(i, 1);
+                    i--;
+                } else if (jugador.chocaste(bonusItems[i])) {
+                    bonusItems.splice(i, 1);
+                    score += 100;
+                    puntaje.text = "Score: " + score;
+                    reproducirSonidoBonus();
+                }
+                bonusItems[i].actualizar();
+            }
+
+            puntaje.actualizar();
+            jugador.nuevaPos();
+            jugador.actualizar();
+
+            timeElapsed += 100;
+        }
+
+        function crearObstaculos() {
+            if (cadaIntervalo(150)) {
+                let anchoObstaculo = 120;
+                let altoObstaculo = 120;
+                let posX = Math.floor(Math.random() * (limiteDerecho - limiteIzquierdo - anchoObstaculo)) + limiteIzquierdo;
+                let posY = -altoObstaculo;
+                let imagenesObstaculos = ["avion2.png", "avion3.png", "avion4.png", "avion5.png", "bom.png"];
+
+                let imagenAleatoria = imagenesObstaculos[Math.floor(Math.random() * imagenesObstaculos.length)];
+
+                obstaculos.push(new componente(anchoObstaculo, altoObstaculo, imagenAleatoria, posX, posY, "obstaculo"));
+            }
+        }
+
+        function crearBonus() {
+            if (cadaIntervalo(500)) {
+                let anchoBonus = 100;
+                let altoBonus = 100;
+                let posX = Math.floor(Math.random() * (limiteDerecho - limiteIzquierdo - anchoBonus)) + limiteIzquierdo;
+                let posY = -altoBonus;
+                let imagenBonus = "corazon.png";
+
+                bonusItems.push(new componente(anchoBonus, altoBonus, imagenBonus, posX, posY, "bonus"));
+            }
+        }
+
+        function cadaIntervalo(n) {
+            if ((areaJuego.numFrame / n) % 1 === 0) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

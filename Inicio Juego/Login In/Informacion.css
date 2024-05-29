@@ -1,0 +1,59 @@
+body{
+    background-color:lightseagreen;
+}
+div{
+    margin: 0 auto;
+    text-align: center;
+    width: 80%;
+    padding: 10px;
+    border: 2px solid darkseagreen;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+h1{
+    font-size: 50px;
+    color: black;
+    font-style: oblique;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}	
+h2{
+    font-size: 30px;
+    color: red;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+h3{
+    font-size: 25px;
+    color: black;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    
+}
+p{
+    font-size: 20px;
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+#Ini{
+    position: absolute;
+    top: 1710px;
+    left: 1100px;
+    background-color: red;
+    color: white;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 60px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+footer{
+    text-align: center;
+    font-size: 15px;
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid lightcoral;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+}
